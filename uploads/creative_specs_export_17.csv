@@ -1,0 +1,18 @@
+Creative Specs,Venue Type,Video Supported,Min Duration,Max Duration,Audio Supported,Static Supported,Available Impressions %,Uploaded
+1920x1080,Offices (Office Buildings),true,1,60,false,true,51%,false
+1920x1080,Outdoor (Urban Panels),true,8,10,false,true,14%,false
+1920x1080,Outdoor (Urban Panels),true,15,15,false,true,3%,false
+1920x1080,Outdoor (Urban Panels),false,--,--,false,true,1%,false
+1920x1080,Offices (Office Buildings),true,6,30,false,true,<1%,false
+1920x1080,Transit (Subway),true,15,15,false,true,<1%,false
+1920x1080,Outdoor (Urban Panels),true,6,30,false,true,<1%,false
+1080x1920,Outdoor (Urban Panels),true,15,15,false,true,11%,false
+1080x1920,"Transit (Train Stations, Subway)",true,15,15,false,true,6%,false
+1080x1920,Outdoor (Urban Panels),true,8,10,false,true,6%,false
+1080x1920,Outdoor (Urban Panels),true,6,30,false,true,<1%,false
+1080x1920,Outdoor (Urban Panels),false,--,--,false,true,<1%,false
+1400x400,Transit (Taxi and Rideshare Top),true,8,60,false,true,4%,false
+1400x400,Transit (Taxi and Rideshare Top),true,15,15,false,true,<1%,false
+1920x674,Transit (Taxi and Rideshare Top),true,8,60,false,true,3%,false
+7168x1296,Transit (Train Stations),true,15,15,false,true,<1%,false
+2160x3240,Transit (Subway),true,15,15,false,true,<1%,false
