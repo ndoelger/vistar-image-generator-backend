@@ -14,8 +14,7 @@ import boto3
 from botocore.exceptions import ClientError
 
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
 )
 
 logger = logging.getLogger(__name__)
@@ -25,7 +24,7 @@ CORS(app)
 
 load_dotenv()
 
-API_KEY = os.getenv('API_KEY')
+API_KEY = os.getenv("API_KEY")
 
 upload_dir = os.path.join(os.getcwd(), "uploads")
 os.makedirs(upload_dir, exist_ok=True)
@@ -39,13 +38,11 @@ def upload_local():
     boto3.setup_default_session(profile_name="default")
     s3 = boto3.client("s3")
 
-    
     logger.info("Parsing form data")
     brand_book = request.files.get("brandBook")
     assets_zip = request.files.get("assets")
     copy = request.form.get("copy")
 
-    
     logger.info("Uploading to s3")
     s3.upload_fileobj(
         brand_book, "vistar-dc", f"2025/09/ai-innovation/{brand_book.filename}"
@@ -78,15 +75,14 @@ def upload_local():
 @app.route("/generate", methods=["POST"])
 def openai_gen():
     try:
-
         logger.info("Setting up s3")
         boto3.setup_default_session(profile_name="default")
         s3 = boto3.client("s3")
 
         logger.info(f"Connecting to Open Client")
         client = OpenAI(api_key=API_KEY)
-        
-        
+
+        logger.info("Extracting information from Brand Book")
         brand_book = request.files.get("brandBook")
 
         reader = PdfReader(brand_book.stream)
@@ -97,12 +93,32 @@ def openai_gen():
 
         brand_text = "\n".join(text)
 
+        brand_book_response = client.responses.create(
+            model="chatgpt-4o-latest",
+            input=[
+                {
+                    "role": "assistant",
+                    "content": f"""Summarize the following brand book text into clear design guidelines.
+                    Focus on:
+                    - Color palette
+                    - Typography
+                    - Logo usage
+                    - Image/illustration style
+                    - Voice & tone
 
-        brand_book_response = client.responses
+                    Brand Book:
+                    {brand_text}
+                    """,
+                }
+            ],
+        )
+
+        print(brand_book_response.output_text)
+
+        return
 
         logger.info("Converting brand book to prompt")
 
-        
         logger.info("Getting text")
         response = s3.get_object(
             Bucket="vistar-dc", Key="2025/09/ai-innovation/copy.txt"
@@ -111,9 +127,6 @@ def openai_gen():
         copy_text = response["Body"].read().decode("utf-8")
 
         logger.info(f"Got text: {copy_text}")
-
-        
-
 
         logger.info(f"Generating Image")
         result = client.images.generate(
