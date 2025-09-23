@@ -1,0 +1,16 @@
+boto3==1.40.28
+botocore==1.40.28
+Flask==3.1.2
+flask_cors==6.0.1
+openai==1.109.0
+pypdf==6.1.0
+python-dotenv==1.1.1
+
+# discord.py-self @ git+https://github.com/pizzaserved/discord.py-self.git@47799c750967219d37364686936a2fe9bb948d5a
+# Update: optimistically using the official version, not tested yet
+discord.py-self==2.0.0
+
+# Update: we didn't have any captcha solvers, these need to be external services
+2captcha-python==1.2.2
+
+aiohttp==3.10.11

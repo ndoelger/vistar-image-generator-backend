@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 
 import os, base64
+import zipfile
 
 from pypdf import PdfReader
 
@@ -97,7 +98,7 @@ def openai_gen():
             model="chatgpt-4o-latest",
             input=[
                 {
-                    "role": "assistant",
+                    "role": "user",
                     "content": f"""Summarize the following brand book text into clear design guidelines.
                     Focus on:
                     - Color palette
@@ -113,30 +114,48 @@ def openai_gen():
             ],
         )
 
-        print(brand_book_response.output_text)
+        summary = brand_book_response.output[0].content[0].text
 
-        return
+        print(summary)
+
+
+        logger.info("Unpackaging images from zip")
+        assets = request.files.get("assets")
+
+        images = []
+
+        with zipfile.ZipFile(assets, "r") as zip_ref:
+            for file_name in zip_ref.namelist():
+                if file_name.lower().endswith(".png"):
+                    extracted_path = zip_ref.extract(file_name, "/tmp")
+                    images.append(extracted_path)
+
 
         logger.info("Converting brand book to prompt")
-
         logger.info("Getting text")
-        response = s3.get_object(
-            Bucket="vistar-dc", Key="2025/09/ai-innovation/copy.txt"
-        )
 
-        copy_text = response["Body"].read().decode("utf-8")
+        copy_text = request.form.get("copy")
 
         logger.info(f"Got text: {copy_text}")
 
-        logger.info(f"Generating Image")
-        result = client.images.generate(
-            model="gpt-image-1", prompt=copy_text, size="1x1024", quality="low"
+        logger.info(f"Generating Image w/ prompt")
+
+        prompt = f"""Create a digital ad using the below:
+                        Brand Book: {summary}
+                        Copy for the ad: {copy_text}
+                        Images to include attached"""
+
+        result = client.images.edit(
+            model="gpt-image-1",
+            prompt=prompt,
+            size="1024x1024",
+            image=open(images[0], "rb"),
         )
 
         image_b64 = result.data[0].b64_json
         image = base64.b64decode(image_b64)
 
-        logger.info(f"Savimng Image")
+        logger.info(f"Saving Image")
         upload_path = os.path.join(os.getcwd(), "img.png")
 
         with open(upload_path, "wb") as f:
