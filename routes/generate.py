@@ -11,14 +11,14 @@ logger = logging.getLogger(__name__)
 
 def openai_gen():
     try:
-        # logger.info("Extracting information from Brand Book")
-        # brand_book = request.files.get("brandBook")
+        logger.info("Extracting information from Brand Book")
+        brand_book = request.files.get("brandBook")
 
-        # text = pdf_service.extract_text_from_pdf(brand_book)
+        text = pdf_service.extract_text_from_pdf(brand_book)
 
-        # brand_book_response = openai_service.summarize_brand(text)
+        brand_book_response = openai_service.summarize_brand(text)
 
-        # print(brand_book_response)
+        print(brand_book_response)
 
         logger.info("Unpackaging images from zip")
         assets_zip = request.files.get("assets")
@@ -32,11 +32,13 @@ def openai_gen():
 
         print(images)
 
+        copy = request.form.get("copy")
+
 
         logger.info("Converting brand book to prompt")
         logger.info("Getting text")
-        copy_text = """
-                    Generate a digital advertisement combining the reference pictures. Have the copy say "perfect time for a cup of joe!"
+        copy_text = f"""
+                    Generate a digital advertisement combining the reference pictures. Have the copy say "{copy}".
                     """
 
         logger.info(f"Generating Image w/ prompt")
