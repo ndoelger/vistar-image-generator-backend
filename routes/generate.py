@@ -1,7 +1,6 @@
 from flask import request
 from utils import file_utils, pdf_service
 from services import openai_service
-from utils import logging_config
 
 import os
 
@@ -44,3 +43,6 @@ def openai_gen():
     except Exception as e:
         print(f"ERROR: {e}")
         return "fail!"
+    
+    def midjourney_gen():
+
