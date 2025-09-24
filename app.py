@@ -2,10 +2,8 @@ from flask import Flask
 from flask_cors import CORS
 
 
-from routes import generate, upload
+from routes import generate, upload, resize
 from utils.logging_config import setup_logging
-
-from pypdf import PdfReader
 
 
 logger = setup_logging()
@@ -22,3 +20,7 @@ def upload_route():
 @app.route("/generate", methods=["POST"])
 def generate_route():
     return generate.openai_gen()
+
+@app.route("/resize")
+def resize_route():
+    return generate.gen_img()

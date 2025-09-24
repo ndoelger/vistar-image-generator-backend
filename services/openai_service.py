@@ -42,7 +42,20 @@ def gen_img(prompt, images):
         result = client.images.edit(
             model="gpt-image-1",
             prompt=prompt,
-            size="1024x1024",
+            image=[open(img, "rb") for img in images],
+        )
+        image_b64 = result.data[0].b64_json
+        image = base64.b64decode(image_b64)
+        return image
+
+    except Exception as e:
+            print(f"ERROR: {e}")
+
+def resize_img(sizes, images):
+    try:
+        result = client.images.edit(
+            model="gpt-image-1",
+            prompt=f"Resize the attached image to these sizes: {sizes}",
             image=open(images[0], "rb"),
         )
         image_b64 = result.data[0].b64_json

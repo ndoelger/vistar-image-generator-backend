@@ -2,30 +2,42 @@ from flask import request
 from utils import file_utils, pdf_service
 from services import openai_service
 
-import os
+import os, glob
 
 import logging
+
 logger = logging.getLogger(__name__)
+
 
 def openai_gen():
     try:
-        logger.info("Extracting information from Brand Book")
-        brand_book = request.files.get("brandBook")
+        # logger.info("Extracting information from Brand Book")
+        # brand_book = request.files.get("brandBook")
 
-        text = pdf_service.extract_text_from_pdf(brand_book)
+        # text = pdf_service.extract_text_from_pdf(brand_book)
 
-        brand_book_response = openai_service.summarize_brand(text)
+        # brand_book_response = openai_service.summarize_brand(text)
 
-        print(brand_book_response)
+        # print(brand_book_response)
 
         logger.info("Unpackaging images from zip")
         assets_zip = request.files.get("assets")
 
-        images = file_utils.unzip(assets_zip)
+        images = [
+            f for f in file_utils.unzip(assets_zip)
+            if f.lower().endswith((".png", ".jpg", ".jpeg"))
+            and "__MACOSX" not in f
+            and not os.path.basename(f).startswith("._")
+        ]
+
+        print(images)
+
 
         logger.info("Converting brand book to prompt")
         logger.info("Getting text")
-        copy_text = request.form.get("copy")
+        copy_text = """
+                    Generate a digital advertisement combining the reference pictures. Have the copy say "perfect time for a cup of joe!"
+                    """
 
         logger.info(f"Generating Image w/ prompt")
 
@@ -43,6 +55,3 @@ def openai_gen():
     except Exception as e:
         print(f"ERROR: {e}")
         return "fail!"
-    
-    def midjourney_gen():
-
