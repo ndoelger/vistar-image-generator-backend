@@ -11,14 +11,14 @@ logger = logging.getLogger(__name__)
 
 def openai_gen():
     try:
-        logger.info("Extracting information from Brand Book")
-        brand_book = request.files.get("brandBook")
+        # logger.info("Extracting information from Brand Book")
+        # brand_book = request.files.get("brandBook")
 
-        text = pdf_service.extract_text_from_pdf(brand_book)
+        # text = pdf_service.extract_text_from_pdf(brand_book)
 
-        brand_book_response = openai_service.summarize_brand(text)
+        # brand_book_response = openai_service.summarize_brand(text)
 
-        print(brand_book_response)
+        # print(brand_book_response)
 
         logger.info("Unpackaging images from zip")
         assets_zip = request.files.get("assets")
@@ -33,12 +33,20 @@ def openai_gen():
         print(images)
 
         copy = request.form.get("copy")
+        primary_col = request.form.get("priCol")
+        secondary_col = request.form.get("secCol")
+        tertiary_col = request.form.get("terCol")
 
 
         logger.info("Converting brand book to prompt")
         logger.info("Getting text")
         copy_text = f"""
-                    Generate a digital advertisement combining the reference pictures. Have the copy say "{copy}".
+                    Generate a digital advertisement based on the attached reference photo. Include the attached logo and attached product images. For branding, use:
+                    Primary Color: {primary_col}
+                    Secondary Color: {secondary_col}
+                    Tertiary Color: {tertiary_col}
+                    Have the copy say "{copy}".
+                    Thank you!
                     """
 
         logger.info(f"Generating Image w/ prompt")
