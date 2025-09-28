@@ -5,9 +5,8 @@
 # logger = logging.getLogger(__name__)
 
 # def resize_img():
-#     images = request.files.get("image")
+#     image = request.files.get
 
-#     sizes = request.form.get("sizes")
 
 
 #     def gen_img(prompt, images):

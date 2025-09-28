@@ -17,14 +17,6 @@ logger = logging.getLogger(__name__)
 
 def openai_gen():
     try:
-        # logger.info("Extracting information from Brand Book")
-        # brand_book = request.files.get("brandBook")
-
-        # text = pdf_service.extract_text_from_pdf(brand_book)
-
-        # brand_book_response = openai_service.summarize_brand(text)
-
-        # print(brand_book_response)
 
         logger.info("Unpackaging images from zip")
         assets_zip = request.files.get("assets")
@@ -47,7 +39,8 @@ def openai_gen():
         logger.info("Converting brand book to prompt")
         logger.info("Getting text")
         copy_text = f"""
-                    Generate a digital advertisement based on the attached reference photo. Include the attached logo and attached product images. For branding, use:
+                    Generate a digital advertisement based on the attached reference photo.
+                    Include the attached logo and attached product images. For branding, use:
                     Primary Color: {primary_col}
                     Secondary Color: {secondary_col}
                     Tertiary Color: {tertiary_col}
@@ -57,27 +50,24 @@ def openai_gen():
 
         logger.info(f"Generating Image w/ prompt")
 
-        # gen_img = openai_service.gen_img(copy_text, images)
+        gen_img = openai_service.gen_img(copy_text, images)
 
-        # logger.info(f"Saving Image")
-        # upload_path = os.path.join(os.getcwd(), "img.png")
+        logger.info(f"Saving Image Locally")
+        upload_path = os.path.join(os.getcwd(), "img.png")
 
-        # with open(upload_path, "wb") as f:
-        #     f.write(gen_img)
+        with open(upload_path, "wb") as f:
+            f.write(gen_img)
 
-
-
+        logger.info(f"Saving Image to s3")
 
         boto3.setup_default_session(profile_name="default")
         s3: boto3.client = boto3.client("s3")
 
-        file_path = os.path.join(f"{os.path.dirname(__file__)}/..", "img.png")
-
-        with open(file_path, "rb") as i:
-            s3.upload_fileobj(i, "vistar-dc", f"2025/09/ai-innovation/mg.png")
+        with open(upload_path, "rb") as f:
+            s3.upload_fileobj(f, "vistar-dc", f"2025/09/ai-innovation/img1080.png")
 
         print("Success!")
-        return("https://vistar-dc.s3.us-east-1.amazonaws.com/2025/09/ai-innovation/mg.png")
+        return "https://vistar-dc.s3.us-east-1.amazonaws.com/2025/09/ai-innovation/img1080.png"
 
     except Exception as e:
         print(f"ERROR: {e}")
