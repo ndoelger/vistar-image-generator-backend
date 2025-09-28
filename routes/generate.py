@@ -1,9 +1,10 @@
-from flask import request, send_from_directory
+from flask import request, send_from_directory, send_file
 from utils import file_utils, pdf_service
 from services import openai_service
 
 import base64
 import os, glob
+from io import BytesIO
 
 import boto3
 
@@ -52,22 +53,31 @@ def openai_gen():
 
         gen_img = openai_service.gen_img(copy_text, images)
 
-        logger.info(f"Saving Image Locally")
-        upload_path = os.path.join(os.getcwd(), "img.png")
+        # logger.info(f"Saving Image Locally")
+        # upload_path = os.path.join(os.getcwd(), "img.png")
 
-        with open(upload_path, "wb") as f:
-            f.write(gen_img)
+        # with open(upload_path, "wb") as f:
+        #     f.write(gen_img)
 
-        logger.info(f"Saving Image to s3")
+        logger.info(f"Returning image")
 
-        boto3.setup_default_session(profile_name="default")
-        s3: boto3.client = boto3.client("s3")
+        
+        return send_file(
+            BytesIO(gen_img),
+            mimetype="image/png",
+            as_attachment=False,
+            download_name="generated.png"
+        )
 
-        with open(upload_path, "rb") as f:
-            s3.upload_fileobj(f, "vistar-dc", f"2025/09/ai-innovation/img1080.png")
 
-        print("Success!")
-        return "https://vistar-dc.s3.us-east-1.amazonaws.com/2025/09/ai-innovation/img1080.png"
+        # boto3.setup_default_session(profile_name="default")
+        # s3: boto3.client = boto3.client("s3")
+
+        # with open(upload_path, "rb") as f:
+        #     s3.upload_fileobj(f, "vistar-dc", f"2025/09/ai-innovation/img1080.png")
+
+        # print("Success!")
+        # return send_file(upload_path, mimetype="image/png")
 
     except Exception as e:
         print(f"ERROR: {e}")
