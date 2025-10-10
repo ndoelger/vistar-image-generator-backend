@@ -12,15 +12,10 @@ app = Flask(__name__)
 CORS(app)
 
 
-@app.route("/upload", methods=["POST"])
-def upload_route():
-    return upload.upload_local()
-
-
 @app.route("/generate", methods=["POST"])
 def generate_route():
     return generate.openai_gen()
 
-@app.route("/resize")
+@app.route("/resize", methods=["POST"])
 def resize_route():
-    return generate.gen_img()
+    return resize.resize_img()

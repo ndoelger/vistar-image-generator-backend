@@ -59,7 +59,7 @@ def resize_img(size, image):
             model="gpt-image-1",
             prompt=f"Resize the attached image to {size}",
             image=open(image, "rb"),
-            quality="low"
+            quality="low",
             size="{size}"
         )
         image_b64 = result.data[0].b64_json
